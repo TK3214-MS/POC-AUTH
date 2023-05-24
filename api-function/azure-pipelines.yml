@@ -1,0 +1,29 @@
+pool:
+  vmImage: ubuntu-latest # Use 'windows-latest' if you have Windows native +Node modules
+steps:
+- bash: |
+    if [ -f extensions.csproj ]
+    then
+        dotnet build extensions.csproj --output ./bin
+    fi
+    npm install 
+    npm run build --if-present
+    npm prune --production
+- task: ArchiveFiles@2
+  displayName: "Archive files"
+  inputs:
+    rootFolderOrFile: "$(System.DefaultWorkingDirectory)"
+    includeRootFolder: false
+    archiveFile: "$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip"
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/build$(Build.BuildId).zip'
+    artifactName: 'drop'
+
+- task: AzureFunctionApp@2
+  inputs:
+    azureSubscription: 'FTE-CAP150(fbdb4c71-a589-42e4-9ede-4e56d2591523)'
+    appType: 'functionApp'
+    appName: 'b2csamplescenario-function'
+    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    deploymentMethod: 'auto'
