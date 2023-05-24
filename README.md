@@ -1,3 +1,6 @@
+## Deployment
+Static Web Apps の URL
+- https://brave-grass-055a2a000.3.azurestaticapps.net
 ## 各種実装
 ### バックエンド（API Management + Function）の実装
 - [SPA から使用される Azure API Management と Azure AD B2C によってサーバーレス API を保護する](https://learn.microsoft.com/ja-jp/azure/api-management/howto-protect-backend-frontend-azure-ad-b2c)
