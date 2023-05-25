@@ -346,6 +346,21 @@ POST https://[Azure AD B2C テナント名].b2clogin.com/[Azure AD B2C テナン
 ### 3. アクセストークンを用いた API テスト
 Azure API Management Gateway URL に対して Authorization Bearer トークン認証付きで HTTP クライアントから要求を行い、ステータス 200 が返ってくれば動作確認完了です。
 
+## Azure リソースとコスト
+本サンプルワークロードを展開されますと以下リソースが展開されます。
+
+- API Management
+- Azure Functions
+- Azure SQL Server
+- Azure SQL Database
+- Azure AD B2C
+
+月間コスト見積は以下からご確認可能です。
+
+[Azure 料金計算ツール](https://azure.com/e/62ca9695ff144a71acf0139e2e34d6fc)  
+※月額フル稼働させた場合：約 7,200 円  
+※1時間程度の動作確認をした場合：約 10 円  
+
 ## リソース
 [SPA から使用される Azure API Management と Azure AD B2C によってサーバーレス API を保護する](https://learn.microsoft.com/ja-jp/azure/api-management/howto-protect-backend-frontend-azure-ad-b2c)
 
