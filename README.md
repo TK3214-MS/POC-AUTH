@@ -1,8 +1,8 @@
 ## デモLIVEサイト
-Azure AD B2C 認証付きの Single Page Application に加え、API Management 経由で API として動作する Azure Functions がユーザーオペレーションによりデータベースにテキスト挿入してくれるあるあるシナリオです。
+Azure AD B2C 認証付きの Single Page Application に加え、API Management 経由で API として動作する Azure Functions がユーザーオペレーションにより Azure SQL Database にテキスト挿入してくれるあるあるシナリオです。
 ライブデモサイトを2023年6月末まで期間限定で公開中です。
 
-https://brave-grass-055a2a000.3.azurestaticapps.net
+[デモライブサイト](https://brave-grass-055a2a000.3.azurestaticapps.net)
 
 ![Architecture](https://github.com/TK3214-MS/POC-AUTH/assets/89323076/32e84fc2-d2d7-4599-a852-55a11b07672b)
 
@@ -18,13 +18,16 @@ https://brave-grass-055a2a000.3.azurestaticapps.net
 [サインアップとサインインユーザーフローを作成する](https://learn.microsoft.com/ja-jp/azure/active-directory-b2c/add-sign-up-and-sign-in-policy?pivots=b2c-user-flow)
 
 ### 3. B2C テナントへの Azure AD アプリケーション登録
-#### 3-1. Static Web App 用アプリケーションの登録
+#### 3-1. Web API 用アプリケーションの登録
+Web API 用アプリケーションを登録し、APIスコープを構成します。
 
+[Web API アプリケーションを登録する](https://learn.microsoft.com/ja-jp/azure/active-directory-b2c/configure-authentication-sample-spa-app#step-21-register-the-web-api-application)
+[スコープを構成する](https://learn.microsoft.com/ja-jp/azure/active-directory-b2c/configure-authentication-sample-spa-app#step-22-configure-scopes)
 
-#### 3-2. API 用アプリケーションの登録
+#### 3-2. SPA 用アプリケーションの登録
+SPA 用アプリケーションを登録します。
 
-
-### 4. Static Web App 用アプリに対する API アクセス許可を設定
+[SPA を登録する](https://learn.microsoft.com/ja-jp/azure/active-directory-b2c/configure-authentication-sample-spa-app#step-23-register-the-spa)
 
 ## リソース展開
 以下ボタンをクリック頂くとお持ちの Azure サブスクリプションにリソースが自動作成されます。
@@ -42,15 +45,150 @@ https://brave-grass-055a2a000.3.azurestaticapps.net
 
 ## 展開後構成
 ### 1. Azure Functions へのインバウンドポリシーの設定
+Azure Functions の API Management ブレードから Inbound Processing Policy を作成します。
 
+![Inbound Policy](https://github.com/TK3214-MS/POC-AUTH/assets/89323076/4371bb63-76ee-4542-aedd-d477b267106c)
+
+今回作成するのは以下ポリシーです。完成したポリシー XML を元に構成します。
+
+- cors
+```
+<policies>
+    <inbound>
+        <cors allow-credentials="false">
+            <allowed-origins>
+                <origin>*</origin>
+            </allowed-origins>
+            <allowed-methods preflight-result-max-age="120">
+                <method>GET</method>
+                <method>POST</method>
+            </allowed-methods>
+            <allowed-headers>
+                <header>*</header>
+            </allowed-headers>
+            <expose-headers>
+                <header>*</header>
+            </expose-headers>
+        </cors>
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-signed-tokens="true" clock-skew="300">
+            <openid-config url="https://[B2C テナント名].b2clogin.com/[B2C テナント名].onmicrosoft.com/v2.0/.well-known/openid-configuration?p=[B2Cサインアップ／サインインポリシー名]" />
+            <required-claims>
+                <claim name="aud">
+                    <value>9657766b-d596-4df3-94ab-01ba73f61dcc</value>
+                </claim>
+            </required-claims>
+        </validate-jwt>
+        <rate-limit-by-key calls="300" renewal-period="120" counter-key="@(context.Request.IpAddress)" />
+        <rate-limit-by-key calls="15" renewal-period="60" counter-key="@(context.Request.Headers.GetValueOrDefault("Authorization","").AsJwt()?.Subject)" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
+```
+- validate-jwt
+```
+<policies>
+    <inbound>
+        <cors allow-credentials="false">
+            <allowed-origins>
+                <origin>*</origin>
+            </allowed-origins>
+            <allowed-methods preflight-result-max-age="120">
+                <method>GET</method>
+                <method>POST</method>
+            </allowed-methods>
+            <allowed-headers>
+                <header>*</header>
+            </allowed-headers>
+            <expose-headers>
+                <header>*</header>
+            </expose-headers>
+        </cors>
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-signed-tokens="true" clock-skew="300">
+            <openid-config url="https://[B2C テナント名].b2clogin.com/[B2C テナント名].onmicrosoft.com/v2.0/.well-known/openid-configuration?p=[B2Cサインアップ／サインインポリシー名]" />
+            <required-claims>
+                <claim name="aud">
+                    <value>9657766b-d596-4df3-94ab-01ba73f61dcc</value>
+                </claim>
+            </required-claims>
+        </validate-jwt>
+        <rate-limit-by-key calls="300" renewal-period="120" counter-key="@(context.Request.IpAddress)" />
+        <rate-limit-by-key calls="15" renewal-period="60" counter-key="@(context.Request.Headers.GetValueOrDefault("Authorization","").AsJwt()?.Subject)" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
+```
+- rate-limit-by-key
+```
+<policies>
+    <inbound>
+        <cors allow-credentials="false">
+            <allowed-origins>
+                <origin>*</origin>
+            </allowed-origins>
+            <allowed-methods preflight-result-max-age="120">
+                <method>GET</method>
+                <method>POST</method>
+            </allowed-methods>
+            <allowed-headers>
+                <header>*</header>
+            </allowed-headers>
+            <expose-headers>
+                <header>*</header>
+            </expose-headers>
+        </cors>
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-signed-tokens="true" clock-skew="300">
+            <openid-config url="https://[B2C テナント名].b2clogin.com/[B2C テナント名].onmicrosoft.com/v2.0/.well-known/openid-configuration?p=[B2Cサインアップ／サインインポリシー名]" />
+            <required-claims>
+                <claim name="aud">
+                    <value>9657766b-d596-4df3-94ab-01ba73f61dcc</value>
+                </claim>
+            </required-claims>
+        </validate-jwt>
+        <rate-limit-by-key calls="300" renewal-period="120" counter-key="@(context.Request.IpAddress)" />
+        <rate-limit-by-key calls="15" renewal-period="60" counter-key="@(context.Request.Headers.GetValueOrDefault("Authorization","").AsJwt()?.Subject)" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
+```
 
 ### 2. Azure Functions への認証設定
+Azure Functions の認証ブレードから Azure AD B2C で登録した Web API 用アプリケーションのクライアントIDを設定します。
 
+![Function Authentication](https://github.com/TK3214-MS/POC-AUTH/assets/89323076/b23efedd-9f55-4e88-9bfb-49efed525d20)
 
 ### 3. ソースコードのプッシュ
+以下を参考に Static Web Apps、並びに Azure Functions へソースコードをプッシュします。
 
+[Azure Function Apps へのデプロイ](https://learn.microsoft.com/en-us/azure/azure-functions/functions-develop-vs-code?tabs=csharp)
+[Static Web Apps へのデプロイ](https://learn.microsoft.com/ja-jp/azure/static-web-apps/getting-started?tabs=vanilla-javascript)
 
 ### 4. Azure SQL Database への Azure Functions 認証の設定
+[SQL Server Management Studio](https://learn.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16)より Azure SQL Server へ接続し、以下クエリを実行する事でデータベースへのアクセス権限を Azure Functions サービスプリンシパルに付与します。
+
 ```
 CREATE USER [Azure Functions App のリソース名] FROM EXTERNAL PROVIDER;
 ALTER ROLE db_datareader ADD MEMBER [Azure Functions App のリソース名];
@@ -59,6 +197,8 @@ GO
 ```
 
 ### 5. Azure SQL Database へのサンプルテーブル作成
+[SQL Server Management Studio](https://learn.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16)より Azure SQL Server へ接続し、以下クエリを実行する事でテキスト値挿入用のサンプルテーブルを作成します。
+
 ```
 CREATE TABLE dbo.SampleTable (
     InputText NVARCHAR(MAX) COLLATE Japanese_CI_AS NOT NULL,
@@ -68,12 +208,22 @@ CREATE TABLE dbo.SampleTable (
 
 ## 動作確認
 ### 1. Static Web Apps の URL へアクセス
-
+[デモライブサイト](https://brave-grass-055a2a000.3.azurestaticapps.net)へモダンブラウザー（Microsoft EdgeやGoogle Chrome等）でアクセスします。
 
 ### 2. ユーザーサインアップ
+画面右上の Sign in ボタンをクリックし、Sign in with Redirect を選択します。
+Sign up をクリックし、ユーザーサインアップ（Azure AD B2C テナントへのユーザー作成）を行います。
 
+![User Details](https://github.com/TK3214-MS/POC-AUTH/assets/89323076/63874829-b568-4767-a122-a7414a8fbbd3)
+
+正常にサインインが完了すると Azure AD B2C テナントから払い出された ID トークン内のクレーム値一覧が表示されます。
+
+![Claims](https://github.com/TK3214-MS/POC-AUTH/assets/89323076/25bbdaeb-8672-43c7-9beb-f230d0323d40)
 
 ### 3. データベースからのテキスト値 GET/POST 動作確認
+画面上部にある Text Input ボタンをクリックし、適当なテキスト値を入力し送信ボタンをクリックします。
+
+![Insert](https://github.com/TK3214-MS/POC-AUTH/assets/89323076/77c5b2b5-e4a4-4733-9f38-f67bcde06163)
 
 ## リソース
 [SPA から使用される Azure API Management と Azure AD B2C によってサーバーレス API を保護する](https://learn.microsoft.com/ja-jp/azure/api-management/howto-protect-backend-frontend-azure-ad-b2c)
