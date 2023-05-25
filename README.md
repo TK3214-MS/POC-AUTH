@@ -74,7 +74,7 @@ Azure Functions の API Management ブレードから Inbound Processing Policy 
             <openid-config url="https://[B2C テナント名].b2clogin.com/[B2C テナント名].onmicrosoft.com/v2.0/.well-known/openid-configuration?p=[B2Cサインアップ／サインインポリシー名]" />
             <required-claims>
                 <claim name="aud">
-                    <value>9657766b-d596-4df3-94ab-01ba73f61dcc</value>
+                    <value>[Web API 用 Azure AD B2C登録アプリのクライアントID]</value>
                 </claim>
             </required-claims>
         </validate-jwt>
@@ -115,7 +115,7 @@ Azure Functions の API Management ブレードから Inbound Processing Policy 
             <openid-config url="https://[B2C テナント名].b2clogin.com/[B2C テナント名].onmicrosoft.com/v2.0/.well-known/openid-configuration?p=[B2Cサインアップ／サインインポリシー名]" />
             <required-claims>
                 <claim name="aud">
-                    <value>9657766b-d596-4df3-94ab-01ba73f61dcc</value>
+                    <value>[Web API 用 Azure AD B2C登録アプリのクライアントID]</value>
                 </claim>
             </required-claims>
         </validate-jwt>
@@ -156,7 +156,7 @@ Azure Functions の API Management ブレードから Inbound Processing Policy 
             <openid-config url="https://**[B2C テナント名]**.b2clogin.com/[B2C テナント名].onmicrosoft.com/v2.0/.well-known/openid-configuration?p=[B2Cサインアップ／サインインポリシー名]" />
             <required-claims>
                 <claim name="aud">
-                    <value>9657766b-d596-4df3-94ab-01ba73f61dcc</value>
+                    <value>[Web API 用 Azure AD B2C登録アプリのクライアントID]</value>
                 </claim>
             </required-claims>
         </validate-jwt>
