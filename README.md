@@ -71,7 +71,7 @@ Azure Functions の API Management ブレードから Inbound Processing Policy 
             </expose-headers>
         </cors>
         <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-signed-tokens="true" clock-skew="300">
-            <openid-config url="https://**[B2C テナント名]**.b2clogin.com/**[B2C テナント名]**.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=**[B2Cサインアップ／サインインポリシー名]**" />
+            <openid-config url="https://__[B2C テナント名]__.b2clogin.com/**[B2C テナント名]**.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=**[B2Cサインアップ／サインインポリシー名]**" />
             <required-claims>
                 <claim name="aud">
                     <value>9657766b-d596-4df3-94ab-01ba73f61dcc</value>
