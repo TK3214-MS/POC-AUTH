@@ -71,7 +71,7 @@ Azure Functions の API Management ブレードから Inbound Processing Policy 
             </expose-headers>
         </cors>
         <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-signed-tokens="true" clock-skew="300">
-            <openid-config url="https://[B2C テナント名].b2clogin.com/[B2C テナント名].onmicrosoft.com/v2.0/.well-known/openid-configuration?p=[B2Cサインアップ／サインインポリシー名]" />
+            <openid-config url="https://**[B2C テナント名]**.b2clogin.com/**[B2C テナント名]**.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=**[B2Cサインアップ／サインインポリシー名]**" />
             <required-claims>
                 <claim name="aud">
                     <value>9657766b-d596-4df3-94ab-01ba73f61dcc</value>
@@ -112,7 +112,7 @@ Azure Functions の API Management ブレードから Inbound Processing Policy 
             </expose-headers>
         </cors>
         <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-signed-tokens="true" clock-skew="300">
-            <openid-config url="https://[B2C テナント名].b2clogin.com/[B2C テナント名].onmicrosoft.com/v2.0/.well-known/openid-configuration?p=[B2Cサインアップ／サインインポリシー名]" />
+            <openid-config url="https://**[B2C テナント名]**.b2clogin.com/**[B2C テナント名]**.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=**[B2Cサインアップ／サインインポリシー名]**" />
             <required-claims>
                 <claim name="aud">
                     <value>9657766b-d596-4df3-94ab-01ba73f61dcc</value>
@@ -153,7 +153,7 @@ Azure Functions の API Management ブレードから Inbound Processing Policy 
             </expose-headers>
         </cors>
         <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid." require-expiration-time="true" require-signed-tokens="true" clock-skew="300">
-            <openid-config url="https://[B2C テナント名].b2clogin.com/[B2C テナント名].onmicrosoft.com/v2.0/.well-known/openid-configuration?p=[B2Cサインアップ／サインインポリシー名]" />
+            <openid-config url="https://**[B2C テナント名]**.b2clogin.com/**[B2C テナント名]**.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=**[B2Cサインアップ／サインインポリシー名]**" />
             <required-claims>
                 <claim name="aud">
                     <value>9657766b-d596-4df3-94ab-01ba73f61dcc</value>
@@ -189,40 +189,21 @@ Azure Functions の認証ブレードから Azure AD B2C で登録した Web API
 ```
 import { LogLevel } from "@azure/msal-browser";
 
-/**
- * Enter here the user flows and custom policies for your B2C application
- * To learn more about user flows, visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/user-flow-overview
- * To learn more about custom policies, visit: https://docs.microsoft.com/en-us/azure/active-directory-b2c/custom-policy-overview
- */
 export const b2cPolicies = {
     names: {
-        signUpSignIn: '[Azure AD B2C サインアップ／サインインポリシー名]',
-        // forgotPassword: 'B2C_1_reset_v3',
-        // editProfile: 'B2C_1_edit_profile_v2',
+        signUpSignIn: '**[Azure AD B2C サインアップ／サインインポリシー名]**',
     },
     authorities: {
         signUpSignIn: {
-            authority: 'https://[Azure AD B2C テナント名].b2clogin.com/[Azure AD B2C テナント名].onmicrosoft.com/[Azure AD B2C サインアップ／サインインポリシー名]',
+            authority: 'https://**[Azure AD B2C テナント名]**.b2clogin.com/**[Azure AD B2C テナント名]**.onmicrosoft.com/**[Azure AD B2C サインアップ／サインインポリシー名]**',
         },
-        // forgotPassword: {
-        //     authority: 'https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/B2C_1_reset_v3',
-        // },
-        // editProfile: {
-        //     authority: 'https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/b2c_1_edit_profile_v2',
-        // },
     },
-    authorityDomain: '[Azure AD B2C テナント名].b2clogin.com',
+    authorityDomain: '**[Azure AD B2C テナント名]**.b2clogin.com',
 };
 
-
-/**
- * Configuration object to be passed to MSAL instance on creation. 
- * For a full list of MSAL.js configuration parameters, visit:
- * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/configuration.md 
- */
 export const msalConfig = {
     auth: {
-        clientId: '[SPA用 Azure AD B2C 登録アプリのクライアントID]', // This is the ONLY mandatory field that you need to supply.
+        clientId: '**[SPA用 Azure AD B2C 登録アプリのクライアントID]**', // This is the ONLY mandatory field that you need to supply.
         authority: b2cPolicies.authorities.signUpSignIn.authority, // Choose SUSI as your default authority.
         knownAuthorities: [b2cPolicies.authorityDomain], // Mark your B2C tenant's domain as trusted.
         redirectUri: '/', // You must register this URI on Azure Portal/App Registration. Defaults to window.location.origin
@@ -266,19 +247,13 @@ export const msalConfig = {
  */
 export const protectedResources = {
     apiTodoList: {
-        endpoint: 'https://[API Management リソース名].azure-api.net/「Azure Functions リソース名]/HttpTriggerFunction',
+        endpoint: 'https://**[API Management リソース名]**.azure-api.net/**[Azure Functions リソース名]**/HttpTriggerFunction',
         scopes: {
-            read: ['https://[Azure AD B2C テナント名].onmicrosoft.com/[APIディレクトリ名]/Text.Read']
+            read: ['https://**[Azure AD B2C テナント名]**.onmicrosoft.com/**[APIディレクトリ名]**/Text.Read']
         }
     },
 };
 
-/**
- * Scopes you add here will be prompted for user consent during sign-in.
- * By default, MSAL.js will add OIDC scopes (openid, profile, email) to any login request.
- * For more information about OIDC scopes, visit: 
- * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
- */
 export const loginRequest = {
     scopes: [...protectedResources.apiTodoList.scopes.read],
 };
@@ -292,8 +267,8 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as sql from "mssql";
 
 const config = {
-  server: "[Azure SQL Server FQDN]",
-  database: "Azure SQL Database 名",
+  server: "**[Azure SQL Server FQDN]**",
+  database: "**[Azure SQL Database 名]**",
   authentication: {
     type: "azure-active-directory-msi-app-service",
   },
@@ -313,9 +288,9 @@ const config = {
 [SQL Server Management Studio](https://learn.microsoft.com/ja-jp/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver16)より Azure SQL Server へ接続し、以下クエリを実行する事でデータベースへのアクセス権限を Azure Functions サービスプリンシパルに付与します。
 
 ```
-CREATE USER [Azure Functions App のリソース名] FROM EXTERNAL PROVIDER;
-ALTER ROLE db_datareader ADD MEMBER [Azure Functions App のリソース名];
-ALTER ROLE db_datawriter ADD MEMBER [Azure Functions App のリソース名];
+CREATE USER **[Azure Functions App のリソース名]** FROM EXTERNAL PROVIDER;
+ALTER ROLE db_datareader ADD MEMBER **[Azure Functions App のリソース名]**;
+ALTER ROLE db_datawriter ADD MEMBER **[Azure Functions App のリソース名]**;
 GO
 ```
 
