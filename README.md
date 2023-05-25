@@ -304,7 +304,9 @@ CREATE TABLE dbo.SampleTable (
 );
 ```
 
-## 動作確認
+## 動作確認 - SPA 編
+作成した Single Page Application 上の操作を通して全体構成を確認します。
+
 ### 1. Static Web Apps の URL へアクセス
 [デモライブサイト](https://brave-grass-055a2a000.3.azurestaticapps.net)へモダンブラウザー（Microsoft EdgeやGoogle Chrome等）でアクセスします。
 
@@ -323,6 +325,28 @@ Sign up をクリックし、ユーザーサインアップ（Azure AD B2C テ�
 
 ![Insert](https://github.com/TK3214-MS/POC-AUTH/assets/89323076/77c5b2b5-e4a4-4733-9f38-f67bcde06163)
 
+## 動作確認 - API 編
+パブリッククライアントから Web API 直接キックシナリオを想定して認証フローを確認します。
+今回のフローで用いられているのは [OAuth 2.0 承認コードフロー](https://learn.microsoft.com/ja-jp/azure/active-directory-b2c/authorization-code-flow) と呼ばれるものです。
+
+### 1. 承認コードの取得
+モダンブラウザで以下 URL へアクセスします。
+
+```
+https://[Azure AD B2C テナント名].b2clogin.com/[Azure AD B2C テナント名].onmicrosoft.com/oauth2/v2.0/authorize?p=[Azure AD B2C サインアップ／サインインポリシー名]&client_id=[Web API 用 Azure AD B2C登録アプリのクライアントID]&response_type=code&redirect_uri=https://jwt.ms&response_mode=query&scope=https%3A%2F%2F[Azure AD B2C テナント名].onmicrosoft.com%2Fapiv2%2Fread&state=anything&prompt=login
+```
+
+### 2. アクセストークンの取得
+HTTP クライアント（Postman等）で以下要求を行います。
+
+```
+POST https://[Azure AD B2C テナント名].b2clogin.com/[Azure AD B2C テナント名].onmicrosoft.com/oauth2/v2.0/token?p=[Azure AD B2C サインアップ／サインインポリシー名]&client_id=[Web API 用 Azure AD B2C登録アプリのクライアントID]&client_secret=[Web API 用 Azure AD B2C登録アプリのクライアントシークレット]&scope=https%3A%2F%2F[Azure AD B2C テナント名].onmicrosoft.com%2Fapiv2%2Fread&redirect_uri=https://jwt.ms&grant_type=authorization_code&code=[STEP1で取得した承認コード]
+```
+
+### 3. アクセストークンを用いた API テスト
+Azure API Management Gateway URL に対して Authorization Bearer トークン認証付きで HTTP クライアントから要求を行い、ステータス 200 が返ってくれば動作確認完了です。
+
 ## リソース
 [SPA から使用される Azure API Management と Azure AD B2C によってサーバーレス API を保護する](https://learn.microsoft.com/ja-jp/azure/api-management/howto-protect-backend-frontend-azure-ad-b2c)
+
 [Azure Active Directory B2C を使用してサンプルの React シングルページ アプリケーションで認証を構成する](https://learn.microsoft.com/ja-jp/azure/active-directory-b2c/configure-authentication-sample-react-spa-app)
