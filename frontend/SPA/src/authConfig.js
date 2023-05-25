@@ -12,13 +12,13 @@ import { LogLevel } from "@azure/msal-browser";
  */
 export const b2cPolicies = {
     names: {
-        signUpSignIn: 'B2C_1_signupsignin1',
+        signUpSignIn: '[Azure AD B2C サインアップ／サインインポリシー名]',
         // forgotPassword: 'B2C_1_reset_v3',
         // editProfile: 'B2C_1_edit_profile_v2',
     },
     authorities: {
         signUpSignIn: {
-            authority: 'https://b2csamplescenario.b2clogin.com/b2csamplescenario.onmicrosoft.com/B2C_1_signupsignin1',
+            authority: 'https://[Azure AD B2C テナント名].b2clogin.com/[Azure AD B2C テナント名].onmicrosoft.com/[Azure AD B2C サインアップ／サインインポリシー名]',
         },
         // forgotPassword: {
         //     authority: 'https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/B2C_1_reset_v3',
@@ -27,7 +27,7 @@ export const b2cPolicies = {
         //     authority: 'https://fabrikamb2c.b2clogin.com/fabrikamb2c.onmicrosoft.com/b2c_1_edit_profile_v2',
         // },
     },
-    authorityDomain: 'b2csamplescenario.b2clogin.com',
+    authorityDomain: '[Azure AD B2C テナント名].b2clogin.com',
 };
 
 
@@ -38,7 +38,7 @@ export const b2cPolicies = {
  */
 export const msalConfig = {
     auth: {
-        clientId: '1d651348-34f0-49db-84de-a0a21c11198a', // This is the ONLY mandatory field that you need to supply.
+        clientId: '[SPA用 Azure AD B2C 登録アプリのクライアントID]', // This is the ONLY mandatory field that you need to supply.
         authority: b2cPolicies.authorities.signUpSignIn.authority, // Choose SUSI as your default authority.
         knownAuthorities: [b2cPolicies.authorityDomain], // Mark your B2C tenant's domain as trusted.
         redirectUri: '/', // You must register this URI on Azure Portal/App Registration. Defaults to window.location.origin
@@ -82,9 +82,9 @@ export const msalConfig = {
  */
 export const protectedResources = {
     apiTodoList: {
-        endpoint: 'https://b2csamplescenario-function-apim.azure-api.net/b2csamplescenario-function/HttpTriggerFunction',
+        endpoint: 'https://[API Management リソース名].azure-api.net/「Azure Functions リソース名]/HttpTriggerFunction',
         scopes: {
-            read: ['https://b2csamplescenario.onmicrosoft.com/9657766b-d596-4df3-94ab-01ba73f61dcc/Text.Read']
+            read: ['https://[Azure AD B2C テナント名].onmicrosoft.com/[APIディレクトリ名]/Text.Read']
         }
     },
 };
