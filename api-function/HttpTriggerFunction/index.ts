@@ -2,8 +2,8 @@ import { AzureFunction, Context, HttpRequest } from "@azure/functions";
 import * as sql from "mssql";
 
 const config = {
-  server: "b2csamplescenario-sql.database.windows.net",
-  database: "b2csamplescenario-sql",
+  server: "[Azure SQL Server FQDN]",
+  database: "Azure SQL Database 名",
   authentication: {
     type: "azure-active-directory-msi-app-service",
   },
