@@ -11,12 +11,6 @@ const config = {
     encrypt: true,
     trustServerCertificate: false,
   },
-  // user: "DevManager",
-  // password: "Password!",
-  // options: {
-  //   encrypt: true,
-  //   trustServerCertificate: false,
-  // },
 };
 
 const httpTrigger: AzureFunction = async function (
